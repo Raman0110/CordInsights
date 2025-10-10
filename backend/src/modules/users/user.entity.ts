@@ -31,6 +31,12 @@ export class User {
   @Column({ default: false })
   isAdmin: boolean; // For platform-level admin (not Discord server admin)
 
+  @Column()
+  accessToken: string
+
+  @Column()
+  refreshToken: string
+
   @CreateDateColumn()
   createdAt: Date;
 

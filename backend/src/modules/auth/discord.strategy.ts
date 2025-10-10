@@ -5,13 +5,16 @@ import { Profile } from "passport";
 import Strategy, { StrategyOptions } from "passport-discord";
 
 
-interface DiscordProfile extends Profile {
+export interface DiscordProfile extends Profile {
   id: string;
   username: string;
   discriminator: string;
   avatar: string;
   email?: string;
   guilds?: any[];
+  discordId: string;
+  accessToken: string,
+  refreshToken: string
 }
 
 @Injectable()
