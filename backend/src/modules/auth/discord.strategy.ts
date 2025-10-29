@@ -30,7 +30,6 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
 
   async validate(accessToken: string, refreshToken: string, profile: DiscordProfile,) {
     const { id, username, discriminator, avatar, email, guilds } = profile;
-
     return {
       discordId: id,
       username,
