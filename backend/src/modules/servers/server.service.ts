@@ -14,5 +14,4 @@ export class ServerService {
 
     return user.accessToken
   }
-
 }

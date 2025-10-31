@@ -1,7 +1,8 @@
-import { Controller, Get, Req, Res, UseGuards } from "@nestjs/common";
+import { Controller, Get, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { DiscordAuthGuard } from "./guards/discord-auth.guard";
 import type { Request, Response } from "express";
+import { JWTAuthGuard } from "./guards/jwt-auth.guard";
 
 
 @Controller("auth")
@@ -15,7 +16,10 @@ export class AuthController {
   @Get("discord/callback")
   @UseGuards(DiscordAuthGuard)
   async discordLoginCallback(@Req() req: Request, @Res() res: Response) {
-    const user = (req as any).user;
+    if (!req.user) {
+      throw new UnauthorizedException('No user found after Discord authentication');
+    }
+    const user = req.user;
     const jwt = await this.authService.loginWithDiscord(user);
     const response = {
       token: jwt.accessToken,
@@ -25,7 +29,8 @@ export class AuthController {
   }
 
   @Get('me')
-  async getProfile(@Req() req: any) {
-    return req.user;
+  @UseGuards(JWTAuthGuard)
+  async getProfile(@Req() req: Request, @Res() res: Response) {
+    res.status(200).json(req.user);
   }
 }
