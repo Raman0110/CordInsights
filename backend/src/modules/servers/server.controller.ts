@@ -4,13 +4,14 @@ import { JWTAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { ServerService } from "./server.service";
 import { ConfigService } from "@nestjs/config";
 import type { Request, Response } from "express";
+import { AuthService } from "../auth/auth.service";
 
 
 @Controller("server")
 export class ServerController {
 
   constructor(
-    private readonly serverService: ServerService,
+    private readonly authService: AuthService,
     private readonly configService: ConfigService
   ) { }
 
@@ -23,7 +24,8 @@ export class ServerController {
         throw new UnauthorizedException("User not authenticated");
       }
 
-      const accessToken = await this.serverService.getUserAccessToken(req?.user?.userId);
+      const accessToken = await this.authService.getUserAccessToken(req?.user?.userId);
+
       const response = await axios.get(`${this.configService.get('DISCORD_URL')}/users/@me/guilds`, {
         headers: {
           Authorization: `Bearer ${accessToken}`

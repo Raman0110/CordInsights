@@ -1,17 +1,28 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "../users/user.entity";
 import { Repository } from "typeorm";
+import axios from "axios";
+import { ConfigService } from "@nestjs/config";
+import { NotFoundError } from "rxjs";
 
 
 @Injectable()
 export class ServerService {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) { }
+  constructor
+    (
+      private readonly configService: ConfigService
+    ) { }
 
-  getUserAccessToken = async (userId: string) => {
-    const user = await this.userRepo.findOne({ where: { id: userId } })
-    if (!user) throw new Error("No user found for provided id");
+  getGuildById = async (guildId: string) => {
+    const server = await axios.get(`${this.configService.get("DISCORD_URL")}/guilds/${guildId}`, {
+      headers: {
+        Authorization: `Bot ${this.configService.get("DISCORD_BOT_TOKEN")}`
+      }
+    });
 
-    return user.accessToken
+    if (!server) return null;
+
+    return server;
   }
 }
