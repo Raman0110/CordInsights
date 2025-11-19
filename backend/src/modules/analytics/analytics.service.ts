@@ -15,10 +15,7 @@ interface RecordEventDto {
 export class AnalyticsService {
   private readonly logger = new Logger(AnalyticsService.name);
 
-  constructor(
-    @InjectRepository(Event)
-    private readonly eventRepo: Repository<Event>,
-  ) { }
+  constructor(@InjectRepository(Event) private readonly eventRepo: Repository<Event>) { }
 
   async recordEvent(data: RecordEventDto): Promise<void> {
     try {
@@ -54,7 +51,7 @@ export class AnalyticsService {
       .where('event.guildId = :guildId', { guildId })
       .andWhere('event.event = :event', { event: 'messageCreate' })
       .groupBy('event.userId')
-      .orderBy('messageCount', 'DESC')
+      .orderBy('COUNT(event.id)', 'DESC')
       .limit(limit)
       .getRawMany();
   }
@@ -84,4 +81,32 @@ export class AnalyticsService {
       .orderBy('hour', 'ASC')
       .getRawMany();
   }
+
+  async getTopChannels(guildId: string, limit = 10) {
+    return this.eventRepo
+      .createQueryBuilder('event')
+      .select('event.channelId', 'channelId')
+      .addSelect('COUNT(event.id)', 'messageCount')
+      .where('event.guildId = :guildId', { guildId })
+      .andWhere('event.event = :event', { event: 'messageCreate' })
+      .andWhere('event.channelId IS NOT NULL')
+      .groupBy('event.channelId')
+      .orderBy('COUNT(event.id)', 'DESC')
+      .limit(limit)
+      .getRawMany();
+  }
+
+  async getDistinctSenders(guildId: string, from: Date, to: Date) {
+    const rows = await this.eventRepo
+      .createQueryBuilder('event')
+      .select('event.userId', 'userId')
+      .where('event.guildId = :guildId', { guildId })
+      .andWhere('event.event = :event', { event: 'messageCreate' })
+      .andWhere('event.timestamp BETWEEN :from AND :to', { from, to })
+      .groupBy('event.userId')
+      .getRawMany();
+
+    return rows.length;
+  }
+
 }

@@ -1,7 +1,6 @@
 import { Controller, Get, Param, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
 import axios from "axios";
 import { JWTAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { ServerService } from "./server.service";
 import { ConfigService } from "@nestjs/config";
 import type { Request, Response } from "express";
 import { AuthService } from "../auth/auth.service";

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AnalyticsService } from './analytics.service';
 import { Event } from './analytics.entity';
+import { AnalyticsController } from './analytics.controller';
 
 @Module({
   imports: [
@@ -14,5 +15,6 @@ import { Event } from './analytics.entity';
     AnalyticsService,
     TypeOrmModule,
   ],
+  controllers: [AnalyticsController]
 })
 export class AnalyticsModule { }

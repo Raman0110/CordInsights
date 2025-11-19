@@ -6,6 +6,7 @@ import { DbModule } from './database/db.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ServerModule } from './modules/servers/server.module';
 import { BotModule } from './modules/bot/bot.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { BotModule } from './modules/bot/bot.module';
     DbModule,
     AuthModule,
     ServerModule,
-    BotModule
+    BotModule,
+    AnalyticsModule
   ],
   controllers: [AppController],
   providers: [AppService],
